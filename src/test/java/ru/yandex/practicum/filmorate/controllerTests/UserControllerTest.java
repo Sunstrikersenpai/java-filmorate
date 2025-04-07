@@ -1,18 +1,22 @@
 package ru.yandex.practicum.filmorate.controllerTests;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
     UserController controller = new UserController();
     User user;
+    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @BeforeEach
     void setUp() {
@@ -46,18 +50,17 @@ public class UserControllerTest {
     @Test
     void addUser_incorrectEmailThrow() {
         User badDataUser = user.toBuilder().email(" ").build();
+        Set<ConstraintViolation<User>> violations = validator.validate(badDataUser);
 
-        assertThrows(ValidationException.class, () -> controller.addUser(badDataUser));
-        assertTrue(controller.getUsers().isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
     void addUser_incorrectLoginThrow() {
-        User badDataUser = user.toBuilder().build();
-        badDataUser.setLogin(" ");
+        User badDataUser = user.toBuilder().login(" ").build();
+        Set<ConstraintViolation<User>> violations = validator.validate(badDataUser);
 
-        assertThrows(ValidationException.class, () -> controller.addUser(badDataUser));
-        assertTrue(controller.getUsers().isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test

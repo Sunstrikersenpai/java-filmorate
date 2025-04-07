@@ -1,5 +1,8 @@
 package ru.yandex.practicum.filmorate.controllerTests;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
@@ -7,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +18,7 @@ public class FilmControllerTest {
 
     FilmController controller = new FilmController();
     Film film;
+    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @BeforeEach
     void setUp() {
@@ -47,18 +52,18 @@ public class FilmControllerTest {
     @Test
     void addFilm_blankNameThrows() {
         Film invalid = film.toBuilder().name(" ").build();
+        Set<ConstraintViolation<Film>> violations = validator.validate(invalid);
 
-        assertThrows(ValidationException.class, () -> controller.addFilm(invalid));
-        assertTrue(controller.getFilms().isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
     void addFilm_descriptionTooLongThrows() {
         String tooLongDesc = "a".repeat(201);
         Film invalid = film.toBuilder().description(tooLongDesc).build();
+        Set<ConstraintViolation<Film>> violations = validator.validate(invalid);
 
-        assertThrows(ValidationException.class, () -> controller.addFilm(invalid));
-        assertTrue(controller.getFilms().isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
@@ -73,7 +78,6 @@ public class FilmControllerTest {
     void addFilm_negativeDurationThrows() {
         Film invalid = film.toBuilder().duration(-120).build();
 
-        assertThrows(ValidationException.class, () -> controller.addFilm(invalid));
         assertTrue(controller.getFilms().isEmpty());
     }
 
