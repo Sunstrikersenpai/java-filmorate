@@ -42,7 +42,7 @@ public class FilmControllerTest {
     void uptFilm_successfully() {
         controller.addFilm(film);
         Film updatedFilm = film.toBuilder().name("Interstellar").build();
-        controller.uptFilm(updatedFilm);
+        controller.updateFilm(updatedFilm);
 
         assertEquals(1, controller.getFilms().size());
         assertNotEquals(controller.getFilms().getFirst(), film);
@@ -86,7 +86,7 @@ public class FilmControllerTest {
         controller.addFilm(film);
         Film other = film.toBuilder().id(999).name("Unknown").build();
 
-        assertThrows(IllegalArgumentException.class, () -> controller.uptFilm(other));
+        assertThrows(IllegalArgumentException.class, () -> controller.updateFilm(other));
     }
 
     @Test
