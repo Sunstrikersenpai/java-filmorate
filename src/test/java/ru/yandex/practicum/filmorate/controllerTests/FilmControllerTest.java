@@ -70,15 +70,20 @@ public class FilmControllerTest {
     void addFilm_invalidReleaseDateThrows() {
         Film invalid = film.toBuilder().releaseDate(LocalDate.of(1800, 1, 1)).build();
 
-        assertThrows(ValidationException.class, () -> controller.addFilm(invalid));
-        assertTrue(controller.getFilms().isEmpty());
+        Set<ConstraintViolation<Film>> violations = validator.validate(invalid);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Дата релиза")));
     }
 
     @Test
     void addFilm_negativeDurationThrows() {
         Film invalid = film.toBuilder().duration(-120).build();
 
-        assertTrue(controller.getFilms().isEmpty());
+        Set<ConstraintViolation<Film>> violations = validator.validate(invalid);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Продолжительность должна")));
     }
 
     @Test
