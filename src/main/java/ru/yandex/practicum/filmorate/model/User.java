@@ -8,11 +8,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
 public class User {
-    private Integer id;
+    private Long id;
     @Email(message = "Неверный формат email")
     @NotBlank(message = "email не может быть пустым")
     private String email;
@@ -22,4 +23,9 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
+    private Set<Long> friendList;
+
+    public void addToFriendList(Long id){
+        friendList.add(id);
+    }
 }
