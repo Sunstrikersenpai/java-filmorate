@@ -15,4 +15,4 @@ public class ReleaseDateValidator implements ConstraintValidator<ReleaseDate, Lo
         }
         return !value.isBefore(EARLIEST_DATE);
     }
-} 
+}
