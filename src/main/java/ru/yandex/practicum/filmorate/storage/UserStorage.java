@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -15,5 +13,7 @@ public interface UserStorage {
 
     User updateUser(User user);
 
-    Map<Long,User> getMapUsers();
+    Map<Long, User> getMapUsers();
+
+    boolean isUserExist(Long userId);
 }

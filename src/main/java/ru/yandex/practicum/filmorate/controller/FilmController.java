@@ -27,17 +27,20 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("GET /films");
         return filmStorage.findAll();
     }
 
     @GetMapping("popular")
-    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> getTopFilms(@RequestParam(name = "count", defaultValue = "10") int count) {
+        log.info("GET /popular par count = {}", count);
         return filmService.getTopFilms(count);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Film addFilm(@RequestBody @Valid Film film) {
+        log.info("POST /films");
         return filmStorage.create(film);
     }
 
@@ -46,6 +49,7 @@ public class FilmController {
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
+        log.info("PUT {}/like/{}", filmId, userId);
         return filmService.addLike(filmId, userId);
     }
 
@@ -54,11 +58,13 @@ public class FilmController {
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
+        log.info("DEL {}/like/{}", filmId, userId);
         return filmService.deleteLike(filmId, userId);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
+        log.info("PUT /films");
         return filmStorage.update(film);
     }
 }

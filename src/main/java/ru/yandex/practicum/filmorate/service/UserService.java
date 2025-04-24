@@ -1,15 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
+@Slf4j
 public class UserService {
 
     private final UserStorage users;
@@ -21,9 +25,12 @@ public class UserService {
 
     public User addUserToFriendList(Long user1Id, Long user2Id) {
         User user1 = users.getMapUsers().get(user1Id);
+        if (user1 == null) {
+            throw new NotFoundException("User id " + user1Id + "not found");
+        }
         User user2 = users.getMapUsers().get(user2Id);
-        if (user1 == null || user2 == null) {
-            throw new NotFoundException("User not found");
+        if (user2 == null) {
+            throw new NotFoundException("User id " + user2Id + "not found");
         }
         user1.addToFriendList(user2Id);
         user2.addToFriendList(user1Id);
@@ -32,9 +39,12 @@ public class UserService {
 
     public User deleteUserFromFriendList(Long user1Id, Long user2Id) {
         User user1 = users.getMapUsers().get(user1Id);
+        if (user1 == null) {
+            throw new NotFoundException("User id " + user1Id + "not found");
+        }
         User user2 = users.getMapUsers().get(user2Id);
-        if (user1 == null || user2 == null) {
-            throw new NotFoundException("User not found");
+        if (user2 == null) {
+            throw new NotFoundException("User id " + user2Id + "not found");
         }
         user1.getFriendList().remove(user2Id);
         user2.getFriendList().remove(user1Id);
@@ -42,6 +52,9 @@ public class UserService {
     }
 
     public List<User> getFriendList(Long userId) {
+        if (!users.isUserExist(userId)) {
+            throw new NotFoundException("User not found");
+        }
         Map<Long, User> userMap = users.getMapUsers();
         Set<Long> friendIds = userMap.get(userId).getFriendList();
 
@@ -56,10 +69,10 @@ public class UserService {
         User user2 = userMap.get(userId2);
 
         if (user1 == null) {
-            throw new NotFoundException("User id "+ userId1 + "not found");
+            throw new NotFoundException("User id " + userId1 + "not found");
         }
         if (user2 == null) {
-            throw new NotFoundException("User id "+ userId2 + "not found");
+            throw new NotFoundException("User id " + userId2 + "not found");
         }
 
         Set<Long> commonFriendIds = new HashSet<>(user1.getFriendList());
