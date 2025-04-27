@@ -41,6 +41,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film getFilm(Long id) {
         if (films.containsKey(id)) {
             return films.get(id);
-        } else throw new NotFoundException("Film not found");
+        } else {
+            throw new NotFoundException("Film not found");
+        }
     }
 }

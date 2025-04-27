@@ -1,33 +1,27 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    private final UserStorage userStorage;
-    private final UserService userService;
 
-    @Autowired
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @GetMapping
     public List<User> getUsers() {
         log.info("GET /users");
-        return userStorage.getUsers();
+        return userService.getUsers();
     }
 
     @GetMapping("{id}/friends")
@@ -67,12 +61,12 @@ public class UserController {
     @PostMapping
     public User addUser(@RequestBody @Valid User user) {
         log.info("POST /users");
-        return userStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody @Valid User user) {
         log.info("PUT /users");
-        return userStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 }
