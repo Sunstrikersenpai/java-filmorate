@@ -1,45 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
+@RequiredArgsConstructor
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
+
+    private final FilmService filmService;
 
     @GetMapping
     public List<Film> getFilms() {
-        return new ArrayList<>(films.values());
+        log.info("GET /films");
+        return filmService.findAll();
     }
 
+    @GetMapping("popular")
+    public List<Film> getTopFilms(@RequestParam(name = "count", defaultValue = "10") int count) {
+        log.info("GET /popular par count = {}", count);
+        return filmService.getTopFilms(count);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Film addFilm(@RequestBody @Valid Film film) {
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        return film;
+        log.info("POST /films");
+        return filmService.create(film);
+    }
+
+    @PutMapping("{id}/like/{userId}")
+    public Film likeFilm(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId
+    ) {
+        log.info("PUT {}/like/{}", filmId, userId);
+        return filmService.addLike(filmId, userId);
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public Film deleteLike(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId
+    ) {
+        log.info("DEL {}/like/{}", filmId, userId);
+        return filmService.deleteLike(filmId, userId);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
-        if (!films.containsKey(film.getId())) {
-            log.warn("Фильм с ID {} не найден", film.getId());
-            throw new IllegalArgumentException();
-        }
-        films.put(film.getId(), film);
-        return film;
-    }
-
-    public int getNextId() {
-        int currentMaxId = films.keySet().stream().mapToInt(id -> id).max().orElse(0);
-        return ++currentMaxId;
+        log.info("PUT /films");
+        return filmService.update(film);
     }
 }
