@@ -25,9 +25,9 @@ public class FilmController {
     }
 
     @GetMapping("popular")
-    public List<Film> getTopFilms(@RequestParam(name = "count", defaultValue = "10") int count) {
+    public List<Film> getPopular(@RequestParam(name = "count", defaultValue = "10") Long count) {
         log.info("GET /popular par count = {}", count);
-        return filmService.getTopFilms(count);
+        return filmService.getPopular(count);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -59,5 +59,13 @@ public class FilmController {
     public Film updateFilm(@RequestBody @Valid Film film) {
         log.info("PUT /films");
         return filmService.update(film);
+    }
+
+    @GetMapping("{id}")
+    public Film getFilmById(
+            @PathVariable("id") Long filmId
+    ) {
+        log.info("GET films/{}", filmId);
+        return filmService.getFilmById(filmId);
     }
 }
