@@ -34,4 +34,8 @@ public class User {
     public void addToFriendList(Long id) {
         friendList.add(id);
     }
+
+    public void removeFromFriendList(Long id) {
+        friendList.remove(id);
+    }
 }

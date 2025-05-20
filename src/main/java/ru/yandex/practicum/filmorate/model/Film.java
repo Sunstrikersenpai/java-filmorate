@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
@@ -27,6 +27,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Продолжительность должна быть больше 0")
     private Integer duration;
-    @Builder.Default
     private Set<Long> usersLikes = new HashSet<>();
+    private Set<Genre> genres;
+    private Mpa mpa;
 }
