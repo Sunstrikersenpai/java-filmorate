@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     film_id     BIGINT NOT NULL REFERENCES films(film_id),
     is_positive BOOLEAN NOT NULL,
     content     VARCHAR(1000) NOT NULL,
-    useful      BIGINT DEFAULT 0;
+    useful      INTEGER DEFAULT 0
     );
 
 CREATE TABLE IF NOT EXISTS directors (
@@ -76,4 +76,11 @@ CREATE TABLE IF NOT EXISTS events (
     operation  VARCHAR(50) NOT NULL,
     entity_id  BIGINT,
     timestamp  TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+
+CREATE TABLE IF NOT EXISTS review_likes (
+    review_id BIGINT NOT NULL REFERENCES reviews(review_id) ON DELETE CASCADE,
+    user_id   BIGINT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    is_positive BOOLEAN NOT NULL,
+    PRIMARY KEY (review_id, user_id)
     );
