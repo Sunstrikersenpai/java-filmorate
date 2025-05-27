@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     film_id     BIGINT NOT NULL REFERENCES films(film_id),
     is_positive BOOLEAN NOT NULL,
     content     VARCHAR(1000) NOT NULL,
-    useful      BIGINT DEFAULT 0;
+    useful      INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS directors (
