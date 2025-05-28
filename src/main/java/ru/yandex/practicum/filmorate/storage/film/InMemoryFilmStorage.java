@@ -62,4 +62,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         return sortedFilms.subList(0, Math.toIntExact(Math.min(count, sortedFilms.size())));
     }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        return List.of();
+    }
 }

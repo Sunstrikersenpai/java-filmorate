@@ -133,6 +133,22 @@ public class FilmDbStorage implements FilmStorage {
         }, count);
     }
 
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id,m.name AS mpa_name," +
+                " COUNT(l3.user_id) AS likes_count " +
+                "FROM films f  " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "JOIN likes l1 ON f.film_id = l1.film_id " +
+                "JOIN likes l2 ON f.film_id = l2.film_id " +
+                "JOIN likes l3 ON f.film_id = l3.film_id " +
+                "WHERE l1.user_id = ? AND l2.user_id = ? " +
+                "GROUP BY f.film_id  " +
+                "ORDER BY likes_count DESC";
+
+        return jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
+    }
+
     private Set<Genre> loadGenresByFilmId(Long filmId) {
         String genresSql = "SELECT g.genre_id, g.name FROM film_genre fg JOIN genres g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";
         List<Genre> genres = jdbcTemplate.query(genresSql, genreRowMapper, filmId);

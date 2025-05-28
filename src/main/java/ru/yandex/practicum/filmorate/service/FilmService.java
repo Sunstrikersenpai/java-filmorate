@@ -80,6 +80,12 @@ public class FilmService {
         return filmStorage.getFilm(id).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        getUserById(userId);
+        getUserById(friendId);
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
     private void validateMpa(Film film) {
         if (film.getMpa() != null && !mpaDbStorage.existsById(film.getMpa().getId())) {
             throw new NotFoundException("MPA не найден");
