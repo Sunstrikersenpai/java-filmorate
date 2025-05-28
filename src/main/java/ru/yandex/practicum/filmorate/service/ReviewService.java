@@ -79,7 +79,7 @@ public class ReviewService {
     }
 
     private Film getFilmById(Long filmId) {
-        return filmStorage.getFilm(filmId).orElseThrow(()->new NotFoundException("Film not found"));
+        return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 }
 
