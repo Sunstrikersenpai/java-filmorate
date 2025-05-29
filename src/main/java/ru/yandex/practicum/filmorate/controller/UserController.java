@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -68,5 +69,11 @@ public class UserController {
     public User updateUser(@RequestBody @Valid User user) {
         log.info("PUT /users");
         return userService.updateUser(user);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public List<Film> getRecommendationsFilms(@PathVariable("id") Long userId) {
+        log.info("GET /users/{}/recommendations", userId);
+        return userService.getRecommendationsFilms(userId);
     }
 }
