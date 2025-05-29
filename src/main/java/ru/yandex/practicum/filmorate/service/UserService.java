@@ -5,7 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.storage.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -18,12 +22,15 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final EventDbStorage eventStorage;
 
     @Autowired
     public UserService(
-            @Qualifier("userDbStorage") UserStorage userStorage
+            @Qualifier("userDbStorage") UserStorage userStorage,
+            EventDbStorage eventStorage
     ) {
         this.userStorage = userStorage;
+        this.eventStorage = eventStorage;
     }
 
     public User addUserToFriendList(Long user1Id, Long user2Id) {
@@ -31,6 +38,12 @@ public class UserService {
         getUserById(user2Id);
 
         userStorage.addFriend(user1Id, user2Id);
+        eventStorage.addEvent(
+                Event.builder().event_type(EventType.FRIEND)
+                        .eventOperation(EventOperation.ADD)
+                        .user_id(user1Id)
+                        .entity_id(user2Id)
+                        .build());
         return user1;
     }
 
@@ -39,6 +52,12 @@ public class UserService {
         getUserById(user2Id);
 
         userStorage.removeFriend(user1Id, user2Id);
+        eventStorage.addEvent(
+                Event.builder().event_type(EventType.FRIEND)
+                        .eventOperation(EventOperation.REMOVE)
+                        .user_id(user1Id)
+                        .entity_id(user2Id)
+                        .build());
         return user1;
     }
 
@@ -76,5 +95,9 @@ public class UserService {
             userStorage.getUserById(friendId).ifPresent(commonFriends::add);
         }
         return commonFriends;
+    }
+
+    public List<Event> getFeed(Long userId) {
+        return eventStorage.getEvent(userId);
     }
 }

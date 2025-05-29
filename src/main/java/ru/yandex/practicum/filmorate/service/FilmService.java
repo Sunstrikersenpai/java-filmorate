@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.storage.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -23,18 +28,21 @@ public class FilmService {
     private final UserStorage userStorage;
     private final MpaDbStorage mpaDbStorage;
     private final GenreDbStorage genreDbStorage;
+    private final EventDbStorage eventDbStorage;
 
     @Autowired
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
             @Qualifier("userDbStorage") UserStorage userStorage,
             MpaDbStorage mpaDbStorage,
-            GenreDbStorage genreDbStorage
+            GenreDbStorage genreDbStorage,
+            EventDbStorage eventDbStorage
     ) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.mpaDbStorage = mpaDbStorage;
         this.genreDbStorage = genreDbStorage;
+        this.eventDbStorage = eventDbStorage;
     }
 
     public Film create(Film film) {
@@ -59,12 +67,14 @@ public class FilmService {
     public Film addLike(Long filmId, Long userId) {
         getUserById(userId);
         filmStorage.addLike(filmId, userId);
+        logEvent(userId,filmId,EventType.LIKE,EventOperation.ADD);
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
     public Film deleteLike(Long filmId, Long userId) {
         getUserById(userId);
         filmStorage.deleteLike(filmId, userId);
+        logEvent(userId,filmId,EventType.LIKE,EventOperation.REMOVE);
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
@@ -99,6 +109,17 @@ public class FilmService {
         if (!existingGenreIds.containsAll(genreIds)) {
             throw new NotFoundException("Жанр не найден");
         }
+    }
+
+    private void logEvent(Long userId, Long entityId, EventType type, EventOperation operation) {
+        eventDbStorage.addEvent(
+                Event.builder()
+                        .user_id(userId)
+                        .entity_id(entityId)
+                        .event_type(type)
+                        .eventOperation(operation)
+                        .build()
+        );
     }
 
     private User getUserById(Long userId) {
