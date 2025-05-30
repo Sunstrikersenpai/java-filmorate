@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -67,14 +66,14 @@ public class FilmService {
     public Film addLike(Long filmId, Long userId) {
         getUserById(userId);
         filmStorage.addLike(filmId, userId);
-        logEvent(userId,filmId,EventType.LIKE,EventOperation.ADD);
+        logEvent(userId, filmId, EventType.LIKE, EventOperation.ADD);
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
     public Film deleteLike(Long filmId, Long userId) {
         getUserById(userId);
         filmStorage.deleteLike(filmId, userId);
-        logEvent(userId,filmId,EventType.LIKE,EventOperation.REMOVE);
+        logEvent(userId, filmId, EventType.LIKE, EventOperation.REMOVE);
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 

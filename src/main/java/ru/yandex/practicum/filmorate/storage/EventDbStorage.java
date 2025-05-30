@@ -18,15 +18,15 @@ public class EventDbStorage {
     public List<Event> getEvent(Long id) {
         String sql = "SELECT * FROM events WHERE user_id = ? ";
         //Логично было бы делать сортировку по timestamp, но это валит тесты ¯\_(ツ)_/¯
-        return jdbcTemplate.query(sql,eventRowMapper,id);
+        return jdbcTemplate.query(sql, eventRowMapper, id);
     }
 
     public void addEvent(Event event) {
         String sql = "INSERT INTO events (user_id, event_type, operation, entity_id) VALUES (?,?,?,?)";
 
         jdbcTemplate.update(
-                sql,event.getUserId(),event.getEventType().name(),
+                sql, event.getUserId(), event.getEventType().name(),
                 event.getOperation().name(), event.getEntityId()
-                );
+        );
     }
 }

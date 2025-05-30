@@ -42,20 +42,20 @@ public class ReviewService {
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
         Review review1 = reviewStorage.addReview(review);
-        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW,EventOperation.ADD);
+        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW, EventOperation.ADD);
         return review1;
     }
 
     public Review updateReview(Review review) {
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW,EventOperation.UPDATE);
+        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.UPDATE);
         return reviewStorage.updateReview(review);
     }
 
     public void deleteReview(Long id) {
         Review review = getReviewById(id);
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW,EventOperation.REMOVE);
+        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.REMOVE);
         reviewStorage.deleteReview(id);
     }
 
@@ -70,28 +70,28 @@ public class ReviewService {
     public void addLike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId,userId, EventType.LIKE,EventOperation.ADD);
+        logEvent(reviewId, userId, EventType.LIKE, EventOperation.ADD);
         reviewStorage.addLike(reviewId, userId);
     }
 
     public void addDislike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId,userId, EventType.DISLIKE,EventOperation.ADD);
+        logEvent(reviewId, userId, EventType.DISLIKE, EventOperation.ADD);
         reviewStorage.addDislike(reviewId, userId);
     }
 
     public void removeLike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId,userId, EventType.LIKE,EventOperation.REMOVE);
+        logEvent(reviewId, userId, EventType.LIKE, EventOperation.REMOVE);
         reviewStorage.removeLike(reviewId, userId);
     }
 
     public void removeDislike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId,userId, EventType.DISLIKE,EventOperation.REMOVE);
+        logEvent(reviewId, userId, EventType.DISLIKE, EventOperation.REMOVE);
         reviewStorage.removeDislike(reviewId, userId);
     }
 
