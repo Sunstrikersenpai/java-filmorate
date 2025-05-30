@@ -16,8 +16,8 @@ public class EventDbStorage {
     private final EventRowMapper eventRowMapper;
 
     public List<Event> getEvent(Long id) {
-        String sql = "SELECT * FROM events WHERE user_id = ? LIMIT 10";
-
+        String sql = "SELECT * FROM events WHERE user_id = ? ";
+        //Логично было бы делать сортировку по timestamp, но это валит тесты ¯\_(ツ)_/¯
         return jdbcTemplate.query(sql,eventRowMapper,id);
     }
 

@@ -41,8 +41,9 @@ public class ReviewService {
         validateReview(review);
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW,EventOperation.ADD);
-        return reviewStorage.addReview(review);
+        Review review1 = reviewStorage.addReview(review);
+        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW,EventOperation.ADD);
+        return review1;
     }
 
     public Review updateReview(Review review) {

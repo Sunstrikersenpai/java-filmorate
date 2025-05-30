@@ -71,8 +71,9 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-    @GetMapping("/{id}/feed")
+    @GetMapping("{id}/feed")
     public List<Event> getFeed(@PathVariable Long id) {
+        log.info("GET {}/feed",id);
         return userService.getFeed(id);
     }
 }
