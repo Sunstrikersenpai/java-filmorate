@@ -62,4 +62,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         return sortedFilms.subList(0, Math.toIntExact(Math.min(count, sortedFilms.size())));
     }
+
+    @Override
+    public void removeFilmById(Long filmId) {
+        films.remove(filmId);
+    }
 }

@@ -77,4 +77,8 @@ public class UserService {
         }
         return commonFriends;
     }
+
+    public void removeUserById(Long userId) {
+        userStorage.removeUserById(userId);
+    }
 }

@@ -84,4 +84,10 @@ public class UserDbStorage implements UserStorage {
                 "JOIN friends f ON u.user_id = f.friend_id WHERE f.user_id = ?";
         return jdbcTemplate.query(sql, userRowMapper, userId);
     }
+
+    @Override
+    public void removeUserById(Long userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
+    }
 }
