@@ -25,8 +25,8 @@ public class EventDbStorage {
         String sql = "INSERT INTO events (user_id, event_type, operation, entity_id) VALUES (?,?,?,?)";
 
         jdbcTemplate.update(
-                sql,event.getUser_id(),event.getEvent_type().name(),
-                event.getEventOperation().name(), event.getEntity_id()
+                sql,event.getUserId(),event.getEventType().name(),
+                event.getOperation().name(), event.getEntityId()
                 );
     }
 }

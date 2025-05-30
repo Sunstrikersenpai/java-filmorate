@@ -14,14 +14,10 @@ import ru.yandex.practicum.filmorate.model.enums.EventType;
 @AllArgsConstructor
 public class Event {
     private Long id;
-    @JsonProperty("userId")
-    private Long user_id;
-    @JsonProperty("eventType")
-    private EventType event_type;
-    @JsonProperty("operation")
-    private EventOperation eventOperation;
-    @JsonProperty("entityId")
-    private Long entity_id;
+    private Long userId;
+    private EventType eventType;
+    private EventOperation operation;
+    private Long entityId;
     private Long timestamp;
 }
 

@@ -39,10 +39,10 @@ public class UserService {
 
         userStorage.addFriend(user1Id, user2Id);
         eventStorage.addEvent(
-                Event.builder().event_type(EventType.FRIEND)
-                        .eventOperation(EventOperation.ADD)
-                        .user_id(user1Id)
-                        .entity_id(user2Id)
+                Event.builder().eventType(EventType.FRIEND)
+                        .operation(EventOperation.ADD)
+                        .userId(user1Id)
+                        .entityId(user2Id)
                         .build());
         return user1;
     }
@@ -53,10 +53,10 @@ public class UserService {
 
         userStorage.removeFriend(user1Id, user2Id);
         eventStorage.addEvent(
-                Event.builder().event_type(EventType.FRIEND)
-                        .eventOperation(EventOperation.REMOVE)
-                        .user_id(user1Id)
-                        .entity_id(user2Id)
+                Event.builder().eventType(EventType.FRIEND)
+                        .operation(EventOperation.REMOVE)
+                        .userId(user1Id)
+                        .entityId(user2Id)
                         .build());
         return user1;
     }

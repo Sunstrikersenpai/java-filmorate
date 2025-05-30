@@ -114,10 +114,10 @@ public class FilmService {
     private void logEvent(Long userId, Long entityId, EventType type, EventOperation operation) {
         eventDbStorage.addEvent(
                 Event.builder()
-                        .user_id(userId)
-                        .entity_id(entityId)
-                        .event_type(type)
-                        .eventOperation(operation)
+                        .userId(userId)
+                        .entityId(entityId)
+                        .eventType(type)
+                        .operation(operation)
                         .build()
         );
     }
