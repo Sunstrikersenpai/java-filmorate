@@ -77,8 +77,8 @@ public class FilmService {
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
-    public List<Film> getPopular(Long count) {
-        return filmStorage.getPopular(count);
+    public List<Film> getPopular(Long count, Long genreId, Long year) {
+        return filmStorage.getPopular(count, genreId, year);
     }
 
     public List<Film> findAll() {

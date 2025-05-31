@@ -27,10 +27,14 @@ public class FilmController {
         return filmService.findAll();
     }
 
-    @GetMapping("popular")
-    public List<Film> getPopular(@RequestParam(name = "count", defaultValue = "10") Long count) {
-        log.info("GET /popular par count = {}", count);
-        return filmService.getPopular(count);
+    @GetMapping("/popular")
+    public List<Film> getPopular(
+            @RequestParam(name = "count", defaultValue = "10") Long count,
+            @RequestParam(name = "genreId", required = false) Long genreId,
+            @RequestParam(name = "year", required = false) Long year
+    ) {
+        log.info("GET /popular count={}, genreId={}, year={}", count, genreId, year);
+        return filmService.getPopular(count, genreId, year);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
