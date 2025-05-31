@@ -4,19 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.enums.FilmSortBy;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -28,7 +17,6 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
-    private final DirectorService directorService;
 
     @GetMapping
     public List<Film> getFilms() {
@@ -80,23 +68,4 @@ public class FilmController {
         log.info("GET films/{}", filmId);
         return filmService.getFilmById(filmId);
     }
-
-    //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
-    @GetMapping("/director/{directorId}")
-    public List<Film> getFilmsOfDirectorSortedByParams(
-            @PathVariable("directorId") Long directorID,
-            @RequestParam(required = false) String sortBy
-    ) {
-        log.info("GET /films/director/{}?sortBy={}}", directorID, sortBy);
-
-        FilmSortBy sortCriteria = null;
-        if (sortBy != null) {
-            sortCriteria = FilmSortBy.fromString(sortBy);
-        }
-
-        List<Film> films = directorService.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
-        return films;
-
-    }
-
 }

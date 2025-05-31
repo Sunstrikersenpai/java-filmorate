@@ -1,17 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.enums.FilmSortBy;
-import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -20,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
 
-@Slf4j
 @Repository
 @Qualifier("filmDbStorage")
 @RequiredArgsConstructor
@@ -28,7 +23,6 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper filmRowMapper;
     private final GenreRowMapper genreRowMapper;
-    private final DirectorRowMapper directorRowMapper;
 
     @Override
     public List<Film> findAll() {
@@ -47,11 +41,6 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film : films) {
             Set<Genre> genres = filmGenres.getOrDefault(film.getId(), Collections.emptySet());
             film.setGenres(genres);
-
-
-            Set<Director> directors = loadDirectorByFilmId(film.getId());
-            film.setDirectors(directors);
-
         }
 
         return films;
@@ -75,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
         Long generatedId = keyHolder.getKey().longValue();
         film.setId(generatedId);
         addGenresToFilm(film);
-        addDirectorToFilm(film);
+
         return film;
     }
 
@@ -91,7 +80,6 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
 
         addGenresToFilm(film);
-        addDirectorToFilm(film);
         return film;
     }
 
@@ -113,8 +101,6 @@ public class FilmDbStorage implements FilmStorage {
         Film film = films.get(0);
         Set<Genre> genres = loadGenresByFilmId(film.getId());
         film.setGenres(genres);
-        Set<Director> directors = loadDirectorByFilmId(film.getId());
-        film.setDirectors(directors);
 
         return Optional.of(film);
     }
@@ -143,41 +129,9 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(query, (rs, rowNum) -> {
             Film film = filmRowMapper.mapRow(rs, rowNum);
             film.setUsersLikes(new HashSet<>());
-            addDirectorToFilm(film);
             return film;
         }, count);
     }
-
-    public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
-
-        String orderQuery = switch (sortBy) {
-            case YEAR -> "f.release_date ASC";
-            case LIKES -> "likes_count DESC";
-        };
-
-        String query = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
-                "f.mpa_id, m.name AS mpa_name, " +
-                "COUNT(l.user_id) AS likes_count " +
-                "FROM films f " +
-                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
-                "JOIN film_directors fd ON f.film_id = fd.film_id " +
-                "LEFT JOIN likes l ON f.film_id = l.film_id " +
-                "WHERE fd.director_id = ? " +
-                "GROUP BY f.film_id, f.name, f.description, f.duration, f.release_date, f.mpa_id, m.name " +
-                "ORDER BY " + orderQuery;
-
-        return jdbcTemplate.query(query, (rs, rowNum) -> {
-            Film film = filmRowMapper.mapRow(rs, rowNum);
-            film.setUsersLikes(new HashSet<>());
-
-            Set<Director> directors = loadDirectorByFilmId(film.getId());
-            film.setDirectors(directors);
-
-            return film;
-        }, directorID);
-
-    }
-
 
     private Set<Genre> loadGenresByFilmId(Long filmId) {
         String genresSql = "SELECT g.genre_id, g.name FROM film_genre fg JOIN genres g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";
@@ -198,27 +152,4 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(insertSql, film.getId(), genre.getId());
         }
     }
-
-
-    private Set<Director> loadDirectorByFilmId(Long filmId) {
-        String sql = "SELECT d.director_id, d.name FROM film_directors fd JOIN directors d ON fd.director_id = d.director_id WHERE fd.film_id = ?";
-        List<Director> directors = jdbcTemplate.query(sql, directorRowMapper, filmId);
-        return directors.isEmpty() ? new HashSet<>() : new HashSet<>(directors);
-    }
-
-    private void addDirectorToFilm(Film film) {
-        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
-            return;
-        }
-
-        String deleteSql = "DELETE FROM film_directors WHERE film_id = ?";
-        jdbcTemplate.update(deleteSql, film.getId());
-
-        String sql = "INSERT INTO film_directors (film_id, director_id) VALUES (?, ?)";
-
-        for (Director director : film.getDirectors()) {
-            jdbcTemplate.update(sql, film.getId(), director.getId());
-        }
-    }
-
 }
