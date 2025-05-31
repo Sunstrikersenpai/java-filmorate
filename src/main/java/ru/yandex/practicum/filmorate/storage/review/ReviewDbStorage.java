@@ -136,7 +136,7 @@ public class ReviewDbStorage implements ReviewStorage {
         }
     }
 
-    private void reviewExist(Long reviewId) {
+    public void reviewExist(Long reviewId) {
         Optional<Review> review = getReview(reviewId);
         if (review.isEmpty()) {
             throw new NotFoundException("Review not found");
