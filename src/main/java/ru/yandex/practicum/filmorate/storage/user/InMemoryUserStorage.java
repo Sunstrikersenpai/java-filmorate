@@ -76,4 +76,9 @@ public class InMemoryUserStorage implements UserStorage {
     public List<Film> getRecommendationsFilms(Long userId) {
         return Collections.emptyList();
     }
+
+    @Override
+    public void removeUserById(Long userId) {
+        users.remove(userId);
+    }
 }

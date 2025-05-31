@@ -89,6 +89,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public void removeUserById(Long userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
+    }
+
+    @Override
     public List<Film> getRecommendationsFilms(Long userId) {
         String sqlRecommendationsFilms = "SELECT DISTINCT f.film_id, f.name, f.description, f.duration, f.release_date, f.mpa_id, m.name AS mpa_name " +
                 "FROM films f " +

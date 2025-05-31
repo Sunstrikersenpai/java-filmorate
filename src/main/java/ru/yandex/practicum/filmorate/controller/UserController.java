@@ -72,6 +72,18 @@ public class UserController {
         return userService.updateUser(user);
     }
 
+    @DeleteMapping("{userId}")
+    public void removeUserById(@PathVariable("userId") Long userId) {
+        log.info("DEL {}", userId);
+        userService.removeUserById(userId);
+    }
+
+    @GetMapping("{userId}")
+    public User getUserById(@PathVariable("userId") Long userId) {
+        log.info("GET {}", userId);
+        return userService.getUserById(userId);
+    }
+
     @GetMapping("{id}/recommendations")
     public List<Film> getRecommendationsFilms(@PathVariable("id") Long userId) {
         log.info("GET /users/{}/recommendations", userId);

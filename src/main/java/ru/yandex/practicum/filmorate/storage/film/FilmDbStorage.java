@@ -199,6 +199,12 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public void removeFilmById(Long filmId) {
+        String sql = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(sql, filmId);
+    }
+
 
     private Set<Director> loadDirectorByFilmId(Long filmId) {
         String sql = "SELECT d.director_id, d.name FROM film_directors fd JOIN directors d ON fd.director_id = d.director_id WHERE fd.film_id = ?";

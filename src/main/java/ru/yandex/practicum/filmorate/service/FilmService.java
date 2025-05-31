@@ -126,7 +126,7 @@ public class FilmService {
                 .orElseThrow(() -> new NotFoundException("User с ID " + userId + " не найден"));
     }
 
-
-
-
+    public void removeFilmById(Long filmId) {
+        filmStorage.removeFilmById(filmId);
+    }
 }

@@ -81,6 +81,12 @@ public class FilmController {
         return filmService.getFilmById(filmId);
     }
 
+    @DeleteMapping("{filmId}")
+    public void removeFilmById(@PathVariable("filmId") Long filmId) {
+        log.info("DEL {}", filmId);
+        filmService.removeFilmById(filmId);
+    }
+
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsOfDirectorSortedByParams(

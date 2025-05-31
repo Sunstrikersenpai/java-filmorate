@@ -98,6 +98,10 @@ public class UserService {
         return commonFriends;
     }
 
+    public void removeUserById(Long userId) {
+        userStorage.removeUserById(userId);
+    }
+
     public List<Event> getFeed(Long userId) {
         return eventStorage.getEvent(userId);
     }
