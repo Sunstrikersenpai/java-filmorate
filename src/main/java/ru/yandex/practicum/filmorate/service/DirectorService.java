@@ -41,7 +41,9 @@ public class DirectorService {
 
     //  Изменение режиссёра
     public Director updateDirector(Director directors) {
-        Director checkedDirector = getDirectorByID(directors.getId());
+        // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
+        getDirectorByID(directors.getId());
+
         return directorsDbStorage.update(directors);
     }
 

@@ -52,7 +52,6 @@ public class DirectorDbStorage {
     }
 
 
-
     public Director update(Director director) {
         String sql = "UPDATE directors SET name = ? WHERE director_id = ?";
         jdbcTemplate.update(sql, director.getName(), director.getId());
