@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.enums;
+package ru.yandex.practicum.filmorate.model.enums;
 
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
