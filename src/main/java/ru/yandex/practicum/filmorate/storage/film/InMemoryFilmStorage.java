@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -56,10 +57,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(Long count) {
-        List<Film> sortedFilms = findAll();
-        sortedFilms.sort(Comparator.comparing((Film film) -> film.getUsersLikes().size()).reversed());
-
-        return sortedFilms.subList(0, Math.toIntExact(Math.min(count, sortedFilms.size())));
+    public List<Film> getPopular(Long count, Long genreId, Long year) {
+        return findAll().stream()
+                .filter(film -> genreId == null ||
+                        (film.getGenres() != null && film.getGenres().stream()
+                                .anyMatch(genre -> genre.getId() != null && genre.getId().longValue() == genreId.longValue())))
+                .filter(film -> year == null || film.getReleaseDate() != null && film.getReleaseDate().getYear() == year)
+                .sorted((f1, f2) -> Integer.compare(
+                        f2.getUsersLikes().size(),
+                        f1.getUsersLikes().size()
+                ))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }

@@ -53,8 +53,8 @@ class FilmDbTest {
     @Test
     @DirtiesContext
     public void testGetPopularFilms() {
-        List<Film> popularFilms = filmStorage.getPopular(2L);
-        assertThat(popularFilms).hasSize(2);
-        assertThat(popularFilms.get(0).getName()).isEqualTo("Inception");
+        List<Film> popularFilms = filmStorage.getPopular(2L, 2L, 2000L);
+        assertThat(popularFilms).hasSize(1);
+        assertThat(popularFilms.get(0).getName()).isEqualTo("Titanic");
     }
 }
