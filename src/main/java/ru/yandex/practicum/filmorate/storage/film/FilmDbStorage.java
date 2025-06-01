@@ -206,7 +206,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> filmList = new ArrayList<>();
 
-        if ( searchByTitle && searchByDirector ) {
+        if (searchByTitle && searchByDirector) {
             String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
                     "f.mpa_id, m.name AS mpa_name " +
                     "FROM films f " +
@@ -222,8 +222,7 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE d.name LIKE ?";
 
             filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%", "%" + query + "%");
-        }
-        else if (searchByTitle) {
+        } else if (searchByTitle) {
             String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
                     "f.mpa_id, m.name AS mpa_name " +
                     "FROM films f " +
@@ -231,8 +230,7 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE f.name LIKE ?";
 
             filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%");
-        }
-        else if (searchByDirector) {
+        } else if (searchByDirector) {
             String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
                     "f.mpa_id, m.name AS mpa_name " +
                     "FROM films f " +

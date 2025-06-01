@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validation.FilmSearchBy;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -113,8 +112,8 @@ public class FilmController {
     @GetMapping("/search")
     public List<Film> searchFilms(
             @RequestParam String query,
-            @RequestParam @FilmSearchBy String by)
-    {
+            @RequestParam @FilmSearchBy String by
+    ) {
         log.info("GET /films/search?query={}&by={}", query, by);
         Set<String> searchCriteria = Arrays.stream(by.split(","))
                 .map(String::trim)
