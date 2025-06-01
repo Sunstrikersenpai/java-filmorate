@@ -47,11 +47,8 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film : films) {
             Set<Genre> genres = filmGenres.getOrDefault(film.getId(), Collections.emptySet());
             film.setGenres(genres);
-
-
             Set<Director> directors = loadDirectorByFilmId(film.getId());
             film.setDirectors(directors);
-
         }
 
         return films;
@@ -219,6 +216,60 @@ public class FilmDbStorage implements FilmStorage {
 
     }
 
+    public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
+
+        boolean searchByTitle = searchCriteria.contains("title");
+        boolean searchByDirector = searchCriteria.contains("director");
+
+        List<Film> filmList = new ArrayList<>();
+
+        if ( searchByTitle && searchByDirector ) {
+            String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
+                    "f.mpa_id, m.name AS mpa_name " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "WHERE f.name LIKE ? " +
+                    "UNION " +
+                    " SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
+                    "f.mpa_id, m.name AS mpa_name " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "JOIN directors d ON fd.director_id = d.director_id " +
+                    "WHERE d.name LIKE ?";
+
+            filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%", "%" + query + "%");
+        }
+        else if (searchByTitle) {
+            String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
+                    "f.mpa_id, m.name AS mpa_name " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "WHERE f.name LIKE ?";
+
+            filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%");
+        }
+        else if (searchByDirector) {
+            String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
+                    "f.mpa_id, m.name AS mpa_name " +
+                    "FROM films f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                    "JOIN directors d ON fd.director_id = d.director_id " +
+                    "WHERE d.name LIKE ?";
+
+            filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%");
+        }
+
+        for (Film film : filmList) {
+            Set<Genre> genres = loadGenresByFilmId(film.getId());
+            film.setGenres(genres);
+            Set<Director> directors = loadDirectorByFilmId(film.getId());
+            film.setDirectors(directors);
+        }
+
+        return filmList;
+    }
 
     private Set<Genre> loadGenresByFilmId(Long filmId) {
         String genresSql = "SELECT g.genre_id, g.name FROM film_genre fg JOIN genres g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";

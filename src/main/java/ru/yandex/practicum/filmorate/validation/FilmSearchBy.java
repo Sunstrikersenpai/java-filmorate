@@ -8,11 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = ReleaseDateValidator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ReleaseDate {
-    String message() default "Дата релиза не может быть раньше 28 декабря 1895 года";
+@Constraint(validatedBy = FilmSearchByValidator.class)
+public @interface FilmSearchBy {
+    String message() default "Invalid search criteria";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
