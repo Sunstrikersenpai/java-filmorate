@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.ReviewRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.ReviewRowMapper;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;
@@ -20,7 +20,6 @@ import java.util.Optional;
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
     private final ReviewRowMapper reviewRowMapper;
-
 
     @Override
     public Review addReview(Review review) {
@@ -50,9 +49,14 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET is_positive = ?, content = ? WHERE review_id = ?";
-        jdbcTemplate.update(sql, review.getIsPositive(), review.getContent(), review.getReviewId());
+        jdbcTemplate.update(
+                sql,
+                review.getIsPositive(),
+                review.getContent(),
+                review.getReviewId()
+        );
 
-        return review;
+        return getReview(review.getReviewId()).orElseThrow(() -> new NotFoundException("not found"));
     }
 
     @Override

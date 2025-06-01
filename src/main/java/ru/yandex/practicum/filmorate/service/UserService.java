@@ -24,14 +24,16 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final EventDbStorage eventStorage;
+    private final FilmService filmService;
 
     @Autowired
     public UserService(
             @Qualifier("userDbStorage") UserStorage userStorage,
-            EventDbStorage eventStorage
+            EventDbStorage eventStorage, FilmService filmService
     ) {
         this.userStorage = userStorage;
         this.eventStorage = eventStorage;
+        this.filmService = filmService;
     }
 
     public User addUserToFriendList(Long user1Id, Long user2Id) {
@@ -72,13 +74,14 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        if (userStorage.getUserById(user.getId()).isEmpty()) {
-            throw new NotFoundException("User not found");
-        }
+        getUserById(user.getId());
         return userStorage.updateUser(user);
     }
 
@@ -103,11 +106,12 @@ public class UserService {
     }
 
     public List<Event> getFeed(Long userId) {
+        getUserById(userId);
         return eventStorage.getEvent(userId);
     }
 
     public List<Film> getRecommendationsFilms(Long userId) {
         getUserById(userId);
-        return userStorage.getRecommendationsFilms(userId);
+        return filmService.getRecommendationsFilms(userId);
     }
 }

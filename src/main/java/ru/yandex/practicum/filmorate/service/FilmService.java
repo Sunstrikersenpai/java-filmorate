@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,18 +62,21 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Film addLike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         getUserById(userId);
-        filmStorage.addLike(filmId, userId);
+        getFilmById(filmId);
+        if (!filmStorage.likeExists(filmId, userId)) {
+            filmStorage.addLike(filmId, userId);
+        }
+        //Ивент должен логироваться в любом случае для теста
         logEvent(userId, filmId, EventType.LIKE, EventOperation.ADD);
-        return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
-    public Film deleteLike(Long filmId, Long userId) {
+    public void deleteLike(Long filmId, Long userId) {
         getUserById(userId);
+        filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
         filmStorage.deleteLike(filmId, userId);
         logEvent(userId, filmId, EventType.LIKE, EventOperation.REMOVE);
-        return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
     }
 
     public List<Film> getPopular(Long count, Long genreId, Long year) {
@@ -106,11 +108,11 @@ public class FilmService {
             return;
         }
 
-        Set<Integer> genreIds = film.getGenres().stream()
+        List<Integer> genreIds = film.getGenres().stream()
                 .map(Genre::getId)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
-        Set<Integer> existingGenreIds = genreDbStorage.findExistingIds(genreIds);
+        List<Integer> existingGenreIds = genreDbStorage.findExistingIds(genreIds);
         if (!existingGenreIds.containsAll(genreIds)) {
             throw new NotFoundException("Жанр не найден");
         }
@@ -136,4 +138,7 @@ public class FilmService {
         filmStorage.removeFilmById(filmId);
     }
 
+    public List<Film> getRecommendationsFilms(Long userId) {
+        return filmStorage.getRecommendationsFilms(userId);
+    }
 }

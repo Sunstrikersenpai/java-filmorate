@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
@@ -26,10 +26,9 @@ public class DirectorDbStorage {
 
     public List<Director> getDirectorList() {
         String sql = "SELECT d.director_id, d.name FROM directors d";
-        List<Director> directorList = jdbcTemplate.query(sql, rowMapper);
-        return directorList;
-    }
 
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 
     public Optional<Director> getDirectorByID(Long directorID) {
         String sql = "SELECT d.director_id, d.name FROM directors d WHERE d.director_id = ?";
@@ -39,6 +38,7 @@ public class DirectorDbStorage {
 
     public Director add(Director director) {
         String sql = "INSERT INTO directors (name) VALUES (?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -47,9 +47,9 @@ public class DirectorDbStorage {
         }, keyHolder);
 
         director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+
         return director;
     }
-
 
     public Director update(Director director) {
         String sql = "UPDATE directors SET name = ? WHERE director_id = ?";
@@ -63,7 +63,5 @@ public class DirectorDbStorage {
         if (rows == 0) {
             throw new NotFoundException("Review not found");
         }
-
     }
-
 }

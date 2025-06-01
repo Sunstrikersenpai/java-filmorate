@@ -80,4 +80,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         return List.of();
     }
+
+    @Override
+    public List<Film> getRecommendationsFilms(Long userId) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean likeExists(Long filmId, Long userId) {
+        return false;
+    }
 }
