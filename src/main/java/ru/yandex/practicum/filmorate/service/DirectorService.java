@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DirectorService {
@@ -55,8 +56,10 @@ public class DirectorService {
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
     public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
         return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortBy);
-
     }
 
-
+    // поиск по названию фильмов и по режиссёру
+    public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
+        return filmDbStorage.getFilmsBySearchCriteria(query, searchCriteria);
+    }
 }
