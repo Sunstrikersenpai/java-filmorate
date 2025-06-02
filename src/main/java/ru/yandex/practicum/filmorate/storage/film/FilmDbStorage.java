@@ -71,8 +71,10 @@ public class FilmDbStorage implements FilmStorage {
 
         Long generatedId = keyHolder.getKey().longValue();
         film.setId(generatedId);
+
         addGenresToFilm(film);
         addDirectorToFilm(film);
+
         return film;
     }
 
@@ -160,8 +162,13 @@ public class FilmDbStorage implements FilmStorage {
 
         return jdbcTemplate.query(query, params.toArray(), (rs, rowNum) -> {
             Film film = filmRowMapper.mapRow(rs, rowNum);
-            film.setUsersLikes(new HashSet<>());
-            addDirectorToFilm(film);
+
+            Set<Genre> genres = loadGenresByFilmId(film.getId());
+            Set<Director> directors = loadDirectorByFilmId(film.getId());
+
+            film.setGenres(new ArrayList<>(genres));
+            film.setDirectors(directors);
+
             return film;
         });
     }
@@ -188,7 +195,6 @@ public class FilmDbStorage implements FilmStorage {
 
         return films;
     }
-
 
     public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
 
@@ -326,4 +332,26 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getRecommendationsFilms(Long userId) {
+        String sqlRecommendationsFilms = "SELECT DISTINCT f.film_id, f.name, f.description, f.duration, f.release_date, f.mpa_id, m.name AS mpa_name " +
+                "FROM films f " +
+                "JOIN likes l ON f.film_id = l.film_id " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE l.user_id IN (SELECT l2.user_id " +
+                "FROM likes l2 " +
+                "WHERE l2.user_id != ? " +
+                "AND l2.film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
+                "GROUP BY l2.user_id " +
+                "ORDER BY COUNT(*) DESC " +
+                "LIMIT 1) " +
+                "AND f.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = ?)";
+        List<Film> films = jdbcTemplate.query(sqlRecommendationsFilms, filmRowMapper, userId, userId, userId);
+
+        for (Film film : films) {
+            Set<Genre> genres = loadGenresByFilmId(film.getId());
+            film.setGenres(new ArrayList<>(genres));
+        }
+        return films;
+    }
 }

@@ -136,4 +136,7 @@ public class FilmService {
         filmStorage.removeFilmById(filmId);
     }
 
+    public List<Film> getRecommendationsFilms(Long userId) {
+        return filmStorage.getRecommendationsFilms(userId);
+    }
 }

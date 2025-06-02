@@ -24,14 +24,16 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final EventDbStorage eventStorage;
+    private final FilmService filmService;
 
     @Autowired
     public UserService(
             @Qualifier("userDbStorage") UserStorage userStorage,
-            EventDbStorage eventStorage
+            EventDbStorage eventStorage, FilmService filmService
     ) {
         this.userStorage = userStorage;
         this.eventStorage = eventStorage;
+        this.filmService = filmService;
     }
 
     public User addUserToFriendList(Long user1Id, Long user2Id) {
@@ -111,6 +113,6 @@ public class UserService {
 
     public List<Film> getRecommendationsFilms(Long userId) {
         getUserById(userId);
-        return userStorage.getRecommendationsFilms(userId);
+        return filmService.getRecommendationsFilms(userId);
     }
 }

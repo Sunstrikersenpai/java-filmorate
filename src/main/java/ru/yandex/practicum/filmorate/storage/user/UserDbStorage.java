@@ -8,14 +8,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @Qualifier("userDbStorage")
@@ -92,22 +90,5 @@ public class UserDbStorage implements UserStorage {
     public void removeUserById(Long userId) {
         String sql = "DELETE FROM users WHERE user_id = ?";
         jdbcTemplate.update(sql, userId);
-    }
-
-    @Override
-    public List<Film> getRecommendationsFilms(Long userId) {
-        String sqlRecommendationsFilms = "SELECT DISTINCT f.film_id, f.name, f.description, f.duration, f.release_date, f.mpa_id, m.name AS mpa_name " +
-                "FROM films f " +
-                "JOIN likes l ON f.film_id = l.film_id " +
-                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
-                "WHERE l.user_id IN (SELECT l2.user_id " +
-                "FROM likes l2 " +
-                "WHERE l2.user_id != ? " +
-                "AND l2.film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
-                "GROUP BY l2.user_id " +
-                "ORDER BY COUNT(*) DESC " +
-                "LIMIT 1) " +
-                "AND f.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = ?)";
-        return jdbcTemplate.query(sqlRecommendationsFilms, filmRowMapper, userId, userId, userId);
     }
 }

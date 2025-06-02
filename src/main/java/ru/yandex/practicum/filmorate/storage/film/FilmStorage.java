@@ -24,4 +24,6 @@ public interface FilmStorage {
     void removeFilmById(Long filmId);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Film> getRecommendationsFilms(Long userId);
 }
