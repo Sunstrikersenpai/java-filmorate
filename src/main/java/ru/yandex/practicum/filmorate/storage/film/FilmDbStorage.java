@@ -275,7 +275,7 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY genre_id ASC ";
         List<Genre> genres = jdbcTemplate.query(genresSql, genreRowMapper, filmId);
 
-        log.warn("ПРОВЕРКА: loadGenresByFilmId genres = " + genres );
+        log.warn("ПРОВЕРКА: loadGenresByFilmId genres = " + genres);
 
         return genres.isEmpty() ? new HashSet<>() : new HashSet<>(genres);
     }
@@ -284,13 +284,13 @@ public class FilmDbStorage implements FilmStorage {
 
         String deleteSql = "DELETE FROM film_genre WHERE film_id = ?";
 
-        log.warn("ПРОВЕРКА: addGenresToFilm deleteSql = " + "DELETE FROM film_genre WHERE film_id = {}", film.getId() );
+        log.warn("ПРОВЕРКА: addGenresToFilm deleteSql = " + "DELETE FROM film_genre WHERE film_id = {}", film.getId());
 
         jdbcTemplate.update(deleteSql, film.getId());
 
 
-        log.warn("ПРОВЕРКА: film.getGenres() = " + film.getGenres() );
-        log.warn("ПРОВЕРКА: film.getGenres().isEmpty() = " + film.getGenres().isEmpty() );
+        log.warn("ПРОВЕРКА: film.getGenres() = " + film.getGenres());
+        log.warn("ПРОВЕРКА: film.getGenres().isEmpty() = " + film.getGenres().isEmpty());
 
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return;
@@ -299,7 +299,7 @@ public class FilmDbStorage implements FilmStorage {
         String insertSql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
 
         for (Genre genre : film.getGenres()) {
-            log.warn("ПРОВЕРКА: addGenresToFilm deleteSql = " + "INSERT INTO film_genre (film_id, genre_id) VALUES ({}, {})", film.getId(), genre.getId() );
+            log.warn("ПРОВЕРКА: addGenresToFilm deleteSql = " + "INSERT INTO film_genre (film_id, genre_id) VALUES ({}, {})", film.getId(), genre.getId());
             jdbcTemplate.update(insertSql, film.getId(), genre.getId());
         }
     }

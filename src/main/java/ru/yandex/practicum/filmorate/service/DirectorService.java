@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
