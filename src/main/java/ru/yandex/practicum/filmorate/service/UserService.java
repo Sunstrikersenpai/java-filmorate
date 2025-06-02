@@ -72,14 +72,14 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        return userStorage.addUser(correctionUserData(user));
     }
 
     public User updateUser(User user) {
         if (userStorage.getUserById(user.getId()).isEmpty()) {
             throw new NotFoundException("User not found");
         }
-        return userStorage.updateUser(user);
+        return userStorage.updateUser(correctionUserData(user));
     }
 
     public User getUserById(long id) {
@@ -110,4 +110,12 @@ public class UserService {
         getUserById(userId);
         return userStorage.getRecommendationsFilms(userId);
     }
+
+    private User correctionUserData(User user) {
+        if (user.getName() == null || (user.getName().trim().length() == 0)) {
+            user.setName(user.getLogin());
+        }
+        return user;
+    }
+
 }
