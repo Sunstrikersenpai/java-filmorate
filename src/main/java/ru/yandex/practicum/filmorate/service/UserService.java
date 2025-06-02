@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -72,14 +73,14 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        return userStorage.addUser(correctionUserData(user));
     }
 
     public User updateUser(User user) {
         if (userStorage.getUserById(user.getId()).isEmpty()) {
             throw new NotFoundException("User not found");
         }
-        return userStorage.updateUser(user);
+        return userStorage.updateUser(correctionUserData(user));
     }
 
     public User getUserById(long id) {
@@ -110,4 +111,12 @@ public class UserService {
         getUserById(userId);
         return userStorage.getRecommendationsFilms(userId);
     }
+
+    private User correctionUserData(User user) {
+        if (user.getName() == null || (user.getName().trim().length() == 0)) {
+            user.setName(user.getLogin());
+        }
+        return user;
+    }
+
 }

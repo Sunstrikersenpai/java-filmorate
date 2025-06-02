@@ -65,6 +65,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
         log.info("PUT /films");
+        log.warn("ПРОВЕРКА: Film updateFilm ДАННЫЕ КОНТРОЛЛЕРА для update : " + film);
         return filmService.update(film);
     }
 

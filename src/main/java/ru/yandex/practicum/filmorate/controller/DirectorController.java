@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
@@ -23,19 +25,16 @@ public class DirectorController {
     public ResponseEntity<List<Director>> getAllDirectors() {
         log.warn("GET /directors");
         List<Director> directorList = directorService.getAllDirectors();
-        if (directorList.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(directorList);
     }
 
     //    Получение режиссёра по id
     @GetMapping("{id}")
-    public ResponseEntity<Director> getDirectorByID(@PathVariable("id") Long directorID) {
+    public Director getDirectorByID(@PathVariable("id") Long directorID) {
         log.info("GET /directors/{}", directorID);
 
         Director director = directorService.getDirectorByID(directorID); // если не найден - выбросит 404
-        return ResponseEntity.ok(director);
+        return director;
 
     }
 
@@ -48,9 +47,16 @@ public class DirectorController {
 
     //  Изменение режиссёра
     @PutMapping
-    public Director updateDirector(@RequestBody @Valid Director director) {
+    public ResponseEntity<Director> updateDirector(@RequestBody @Valid Director director) {
         log.info("PUT /directors");
-        return directorService.updateDirector(director);
+        try {
+            Director updated = directorService.updateDirector(director);
+            return ResponseEntity.ok(updated);
+        } catch (ValidationException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (NotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //  Удаление режиссёра

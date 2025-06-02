@@ -39,6 +39,9 @@ public class DirectorDbStorage {
 
     public Director add(Director director) {
         String sql = "INSERT INTO directors (name) VALUES (?)";
+
+        log.warn("ПРОВЕРКА: Director add: sql = " + "INSERT INTO directors (name) VALUES ({})", director.getName());
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -50,7 +53,6 @@ public class DirectorDbStorage {
         return director;
     }
 
-
     public Director update(Director director) {
         String sql = "UPDATE directors SET name = ? WHERE director_id = ?";
         jdbcTemplate.update(sql, director.getName(), director.getId());
@@ -58,7 +60,12 @@ public class DirectorDbStorage {
     }
 
     public void delete(Long directorID) {
-        String sql = "DELETE FROM directors WHERE director_id = ?";
+
+
+        String sql = "DELETE FROM film_directors WHERE director_id = ?";
+        jdbcTemplate.update(sql, directorID);
+
+        sql = "DELETE FROM directors WHERE director_id = ?";
         int rows = jdbcTemplate.update(sql, directorID);
         if (rows == 0) {
             throw new NotFoundException("Review not found");

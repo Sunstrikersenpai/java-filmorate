@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
@@ -10,8 +12,10 @@ import ru.yandex.practicum.filmorate.storage.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class DirectorService {
 
@@ -37,15 +41,28 @@ public class DirectorService {
 
     //  Создание режиссёра
     public Director addDirector(Director directors) {
-        return directorsDbStorage.add(directors);
+        try {
+            validateDirector(directors);
+            Director newDirector = directorsDbStorage.add(directors);
+            return newDirector;
+        } catch (ValidationException | NotFoundException ex) {
+            log.error("Ошибка при обновлении режиссёра: {}", ex.getMessage());
+            throw ex; // Пробрасываем исключение выше
+        }
+
     }
 
     //  Изменение режиссёра
     public Director updateDirector(Director directors) {
-        // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
-        getDirectorByID(directors.getId());
-
-        return directorsDbStorage.update(directors);
+        try {
+            validateDirector(directors);
+            // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
+            getDirectorByID(directors.getId());
+            return directorsDbStorage.update(directors);
+        } catch (ValidationException | NotFoundException ex) {
+            log.error("Ошибка при обновлении режиссёра: {}", ex.getMessage());
+            throw ex; // Пробрасываем исключение выше
+        }
     }
 
     //  Удаление режиссёра
@@ -55,6 +72,8 @@ public class DirectorService {
 
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
     public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
+        // проверка на существование directorID
+        getDirectorByID(directorID);
         return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortBy);
     }
 
@@ -62,4 +81,11 @@ public class DirectorService {
     public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
         return filmDbStorage.getFilmsBySearchCriteria(query, searchCriteria);
     }
+
+    private void validateDirector(Director director) {
+        if (director.getName() == null || (director.getName().trim().length() == 0)) {
+            throw new ValidationException("Имя режиссера не задано.");
+        }
+    }
+
 }
