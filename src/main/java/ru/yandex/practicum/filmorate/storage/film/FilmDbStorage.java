@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
 
         for (Film film : films) {
             Set<Genre> genres = filmGenres.getOrDefault(film.getId(), Collections.emptySet());
-            film.setGenres(genres);
+            film.setGenres(new ArrayList<>(genres));
             Set<Director> directors = loadDirectorByFilmId(film.getId());
             film.setDirectors(directors);
         }
@@ -89,6 +89,10 @@ public class FilmDbStorage implements FilmStorage {
 
         addGenresToFilm(film);
         addDirectorToFilm(film);
+
+        Set<Genre> updatedGenres = loadGenresByFilmId(film.getId());
+        film.setGenres(new ArrayList<>(updatedGenres));
+
         return film;
     }
 
@@ -109,7 +113,7 @@ public class FilmDbStorage implements FilmStorage {
 
         Film film = films.get(0);
         Set<Genre> genres = loadGenresByFilmId(film.getId());
-        film.setGenres(genres);
+        film.setGenres(new ArrayList<>(genres));
         Set<Director> directors = loadDirectorByFilmId(film.getId());
         film.setDirectors(directors);
 
@@ -179,7 +183,7 @@ public class FilmDbStorage implements FilmStorage {
 
         for (Film film : films) {
             Set<Genre> genres = loadGenresByFilmId(film.getId());
-            film.setGenres(genres);
+            film.setGenres(new ArrayList<>(genres));
         }
 
         return films;
@@ -261,7 +265,7 @@ public class FilmDbStorage implements FilmStorage {
 
         for (Film film : filmList) {
             Set<Genre> genres = loadGenresByFilmId(film.getId());
-            film.setGenres(genres);
+            film.setGenres(new ArrayList<>(genres));
             Set<Director> directors = loadDirectorByFilmId(film.getId());
             film.setDirectors(directors);
         }
@@ -276,16 +280,21 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void addGenresToFilm(Film film) {
+        String deleteSql = "DELETE FROM film_genre WHERE film_id = ?";
+        jdbcTemplate.update(deleteSql, film.getId());
+
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return;
         }
 
-        String deleteSql = "DELETE FROM film_genre WHERE film_id = ?";
-        jdbcTemplate.update(deleteSql, film.getId());
-
+        Set<Integer> seen = new HashSet<>();
         String insertSql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
         for (Genre genre : film.getGenres()) {
-            jdbcTemplate.update(insertSql, film.getId(), genre.getId());
+            int genreId = genre.getId();
+            if (!seen.contains(genreId)) {
+                jdbcTemplate.update(insertSql, film.getId(), genreId);
+                seen.add(genreId);
+            }
         }
     }
 
@@ -303,12 +312,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void addDirectorToFilm(Film film) {
+        String deleteSql = "DELETE FROM film_directors WHERE film_id = ?";
+        jdbcTemplate.update(deleteSql, film.getId());
+
         if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
             return;
         }
-
-        String deleteSql = "DELETE FROM film_directors WHERE film_id = ?";
-        jdbcTemplate.update(deleteSql, film.getId());
 
         String sql = "INSERT INTO film_directors (film_id, director_id) VALUES (?, ?)";
 
