@@ -85,4 +85,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getRecommendationsFilms(Long userId) {
         return Collections.emptyList();
     }
+
+    @Override
+    public boolean likeExists(Long filmId, Long userId) {
+        return false;
+    }
 }

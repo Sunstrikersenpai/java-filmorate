@@ -26,8 +26,8 @@ public class DirectorDbStorage {
 
     public List<Director> getDirectorList() {
         String sql = "SELECT d.director_id, d.name FROM directors d";
-        List<Director> directorList = jdbcTemplate.query(sql, rowMapper);
-        return directorList;
+
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
 
@@ -73,5 +73,4 @@ public class DirectorDbStorage {
         }
 
     }
-
 }

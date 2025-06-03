@@ -76,4 +76,6 @@ public class DirectorService {
     public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
         return filmDbStorage.getFilmsBySearchCriteria(query, searchCriteria);
     }
+
+
 }

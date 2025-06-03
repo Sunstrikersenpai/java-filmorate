@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.model.enums.EventType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
-    private Long id;
+    private Long eventId;
     private Long userId;
     private EventType eventType;
     private EventOperation operation;

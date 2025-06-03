@@ -49,21 +49,21 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public Film likeFilm(
+    public void likeFilm(
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
         log.info(" ******** PUT /films/{}/like/{}", filmId, userId);
-        return filmService.addLike(filmId, userId);
+        filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public Film deleteLike(
+    public void deleteLike(
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
         log.info(" ******** DEL /films/{}/like/{}", filmId, userId);
-        return filmService.deleteLike(filmId, userId);
+        filmService.deleteLike(filmId, userId);
     }
 
     @PutMapping
@@ -125,7 +125,7 @@ public class FilmController {
                 .map(String::trim)
                 .collect(Collectors.toSet());
 
-        List<Film> filmList = directorService.getFilmsBySearchCriteria(query, searchCriteria);
+        List<Film> filmList = directorService.getFilmsBySearchCriteria(query.toLowerCase(), searchCriteria);
 
         return filmList;
     }

@@ -21,7 +21,6 @@ public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
     private final ReviewRowMapper reviewRowMapper;
 
-
     @Override
     public Review addReview(Review review) {
         String sql = "INSERT INTO reviews (user_id, film_id, is_positive, content) VALUES (?,?,?,?)";
@@ -50,9 +49,14 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET is_positive = ?, content = ? WHERE review_id = ?";
-        jdbcTemplate.update(sql, review.getIsPositive(), review.getContent(), review.getReviewId());
+        jdbcTemplate.update(
+                sql,
+                review.getIsPositive(),
+                review.getContent(),
+                review.getReviewId()
+        );
 
-        return review;
+        return getReview(review.getReviewId()).orElseThrow(() -> new NotFoundException("not found"));
     }
 
     @Override

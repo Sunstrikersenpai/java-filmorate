@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = FilmSearchByValidator.class)
 public @interface FilmSearchBy {
     String message() default "Invalid search criteria";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

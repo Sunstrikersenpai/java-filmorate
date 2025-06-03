@@ -81,9 +81,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (userStorage.getUserById(user.getId()).isEmpty()) {
-            throw new NotFoundException("User not found");
-        }
+        getUserById(user.getId());
         return userStorage.updateUser(user);
     }
 
@@ -108,6 +106,7 @@ public class UserService {
     }
 
     public List<Event> getFeed(Long userId) {
+        getUserById(userId);
         return eventStorage.getEvent(userId);
     }
 

@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,10 +27,10 @@ public class GenreDbStorage {
         return genres.stream().findFirst();
     }
 
-    public Set<Integer> findExistingIds(Set<Integer> ids) {
+    public List<Integer> findExistingIds(List<Integer> ids) {
         String sql = "SELECT genre_id FROM genres WHERE genre_id IN (" +
                 String.join(",", ids.stream().map(String::valueOf).toArray(String[]::new)) +
                 ")";
-        return new HashSet<>(jdbcTemplate.queryForList(sql, Integer.class));
+        return new ArrayList<>(jdbcTemplate.queryForList(sql, Integer.class));
     }
 }

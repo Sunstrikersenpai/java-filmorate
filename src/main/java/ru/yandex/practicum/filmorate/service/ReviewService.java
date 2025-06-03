@@ -41,22 +41,24 @@ public class ReviewService {
         validateReview(review);
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
-        Review review1 = reviewStorage.addReview(review);
-        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW, EventOperation.ADD);
-        return review1;
+        reviewStorage.addReview(review);
+        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.ADD);
+        return review;
     }
 
     public Review updateReview(Review review) {
+        validateReview(review);
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.UPDATE);
-        return reviewStorage.updateReview(review);
+        Review review1 = reviewStorage.updateReview(review);
+        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW, EventOperation.UPDATE);
+        return review1;
     }
 
     public void deleteReview(Long id) {
         Review review = getReviewById(id);
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.REMOVE);
         reviewStorage.deleteReview(id);
+        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.REMOVE);
     }
 
     public Review getReview(Long id) {
@@ -70,28 +72,24 @@ public class ReviewService {
     public void addLike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId, userId, EventType.LIKE, EventOperation.ADD);
         reviewStorage.addLike(reviewId, userId);
     }
 
     public void addDislike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId, userId, EventType.DISLIKE, EventOperation.ADD);
         reviewStorage.addDislike(reviewId, userId);
     }
 
     public void removeLike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId, userId, EventType.LIKE, EventOperation.REMOVE);
         reviewStorage.removeLike(reviewId, userId);
     }
 
     public void removeDislike(Long reviewId, Long userId) {
         getUserById(userId);
         getReviewById(reviewId);
-        logEvent(reviewId, userId, EventType.DISLIKE, EventOperation.REMOVE);
         reviewStorage.removeDislike(reviewId, userId);
     }
 
@@ -128,6 +126,9 @@ public class ReviewService {
         }
         if (review.getIsPositive() == null) {
             throw new ValidationException("Field 'isPositive' must not be null");
+        }
+        if (review.getContent() == null || review.getContent().isBlank()) {
+            throw new ValidationException("Content must not be empty");
         }
     }
 }

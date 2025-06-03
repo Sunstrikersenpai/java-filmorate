@@ -23,11 +23,6 @@ public class DirectorController {
     public ResponseEntity<List<Director>> getAllDirectors() {
         log.warn(" ******** GET /directors");
         List<Director> directorList = directorService.getAllDirectors();
-
-// Status code is 200 | AssertionError: expected response to have status reason 'OK' but got 'NO CONTENT'
-//        if (directorList.isEmpty()) {
-//            return ResponseEntity.ok().build();
-//        }
         return ResponseEntity.ok(directorList);
     }
 
