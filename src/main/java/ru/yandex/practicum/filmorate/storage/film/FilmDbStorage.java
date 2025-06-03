@@ -124,8 +124,15 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Long filmId, Long userId) {
-        String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
-        jdbcTemplate.update(sql, filmId, userId);
+
+        String checkSql = "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?";
+        int count = jdbcTemplate.queryForObject(checkSql, Integer.class, filmId, userId);
+
+        if (count == 0) {
+
+            String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
+            jdbcTemplate.update(sql, filmId, userId);
+        }
     }
 
     @Override
@@ -218,6 +225,9 @@ public class FilmDbStorage implements FilmStorage {
             Film film = filmRowMapper.mapRow(rs, rowNum);
             film.setUsersLikes(new HashSet<>());
 
+
+            Set<Genre> genres = loadGenresByFilmId(film.getId());
+            film.setGenres(new ArrayList<>(genres));
             Set<Director> directors = loadDirectorByFilmId(film.getId());
             film.setDirectors(directors);
 
@@ -280,7 +290,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Genre> loadGenresByFilmId(Long filmId) {
-        String genresSql = "SELECT g.genre_id, g.name FROM film_genre fg JOIN genres g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";
+        String genresSql = "SELECT g.genre_id, g.name " +
+                "FROM film_genre fg " +
+                "JOIN genres g ON fg.genre_id = g.genre_id " +
+                "WHERE fg.film_id = ?";
         List<Genre> genres = jdbcTemplate.query(genresSql, genreRowMapper, filmId);
         return genres.isEmpty() ? new HashSet<>() : new HashSet<>(genres);
     }
@@ -302,6 +315,7 @@ public class FilmDbStorage implements FilmStorage {
                 seen.add(genreId);
             }
         }
+
     }
 
     @Override
@@ -312,8 +326,13 @@ public class FilmDbStorage implements FilmStorage {
 
 
     private Set<Director> loadDirectorByFilmId(Long filmId) {
-        String sql = "SELECT d.director_id, d.name FROM film_directors fd JOIN directors d ON fd.director_id = d.director_id WHERE fd.film_id = ?";
+        String sql = "SELECT d.director_id, d.name " +
+                "FROM film_directors fd " +
+                "JOIN directors d ON fd.director_id = d.director_id " +
+                "WHERE fd.film_id = ?";
+
         List<Director> directors = jdbcTemplate.query(sql, directorRowMapper, filmId);
+
         return directors.isEmpty() ? new HashSet<>() : new HashSet<>(directors);
     }
 
@@ -330,6 +349,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Director director : film.getDirectors()) {
             jdbcTemplate.update(sql, film.getId(), director.getId());
         }
+
     }
 
     @Override

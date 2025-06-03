@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
@@ -12,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class DirectorService {
 
@@ -37,7 +40,16 @@ public class DirectorService {
 
     //  Создание режиссёра
     public Director addDirector(Director directors) {
-        return directorsDbStorage.add(directors);
+
+
+        try {
+            return directorsDbStorage.add(directors);
+        } catch (IllegalArgumentException e) {
+            // Логируем ошибку валидации
+            log.error("Ошибка при создании режиссёра: {}", e.getMessage());
+            throw new ValidationException(e.getMessage());
+        }
+
     }
 
     //  Изменение режиссёра
@@ -55,6 +67,8 @@ public class DirectorService {
 
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
     public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
+        // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
+        getDirectorByID(directorID);
         return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortBy);
     }
 

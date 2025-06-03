@@ -38,7 +38,14 @@ public class DirectorDbStorage {
     }
 
     public Director add(Director director) {
+
+        // Проверка на пустое имя
+        if (director.getName() == null || director.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Имя режиссера не может быть пустым");
+        }
+
         String sql = "INSERT INTO directors (name) VALUES (?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -47,6 +54,7 @@ public class DirectorDbStorage {
         }, keyHolder);
 
         director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+
         return director;
     }
 

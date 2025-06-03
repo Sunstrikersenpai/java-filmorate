@@ -21,18 +21,20 @@ public class DirectorController {
     //    Список всех режиссёров
     @GetMapping
     public ResponseEntity<List<Director>> getAllDirectors() {
-        log.warn("GET /directors");
+        log.warn(" ******** GET /directors");
         List<Director> directorList = directorService.getAllDirectors();
-        if (directorList.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+
+// Status code is 200 | AssertionError: expected response to have status reason 'OK' but got 'NO CONTENT'
+//        if (directorList.isEmpty()) {
+//            return ResponseEntity.ok().build();
+//        }
         return ResponseEntity.ok(directorList);
     }
 
     //    Получение режиссёра по id
     @GetMapping("{id}")
     public ResponseEntity<Director> getDirectorByID(@PathVariable("id") Long directorID) {
-        log.info("GET /directors/{}", directorID);
+        log.info(" ******** GET /directors/{}", directorID);
 
         Director director = directorService.getDirectorByID(directorID); // если не найден - выбросит 404
         return ResponseEntity.ok(director);
@@ -42,21 +44,21 @@ public class DirectorController {
     //  Создание режиссёра
     @PostMapping
     public Director addDirector(@RequestBody @Valid Director director) {
-        log.warn("POST /directors");
+        log.warn(" ******** POST /directors");
         return directorService.addDirector(director);
     }
 
     //  Изменение режиссёра
     @PutMapping
     public Director updateDirector(@RequestBody @Valid Director director) {
-        log.info("PUT /directors");
+        log.info(" ******** PUT /directors");
         return directorService.updateDirector(director);
     }
 
     //  Удаление режиссёра
     @DeleteMapping("{id}")
     public void deleteDirectors(@PathVariable("id") Long directorID) {
-        log.info("DELETE /directors/{}", directorID);
+        log.info(" ******** DELETE /directors/{}", directorID);
         directorService.deleteDirectors(directorID);
     }
 

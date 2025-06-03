@@ -27,7 +27,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
-        log.info("GET /films");
+        log.info(" ******** GET /films");
         return filmService.findAll();
     }
 
@@ -37,14 +37,14 @@ public class FilmController {
             @RequestParam(name = "genreId", required = false) Long genreId,
             @RequestParam(name = "year", required = false) Long year
     ) {
-        log.info("GET /popular count={}, genreId={}, year={}", count, genreId, year);
+        log.info(" ******** GET /films/popular count={}, genreId={}, year={}", count, genreId, year);
         return filmService.getPopular(count, genreId, year);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Film addFilm(@RequestBody @Valid Film film) {
-        log.info("POST /films");
+        log.info(" ******** POST /films");
         return filmService.create(film);
     }
 
@@ -53,7 +53,7 @@ public class FilmController {
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
-        log.info("PUT {}/like/{}", filmId, userId);
+        log.info(" ******** PUT /films/{}/like/{}", filmId, userId);
         return filmService.addLike(filmId, userId);
     }
 
@@ -62,13 +62,13 @@ public class FilmController {
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId
     ) {
-        log.info("DEL {}/like/{}", filmId, userId);
+        log.info(" ******** DEL /films/{}/like/{}", filmId, userId);
         return filmService.deleteLike(filmId, userId);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
-        log.info("PUT /films");
+        log.info(" ******** PUT /films");
         return filmService.update(film);
     }
 
@@ -76,13 +76,13 @@ public class FilmController {
     public Film getFilmById(
             @PathVariable("id") Long filmId
     ) {
-        log.info("GET films/{}", filmId);
+        log.info(" ******** GET films/{}", filmId);
         return filmService.getFilmById(filmId);
     }
 
     @DeleteMapping("{filmId}")
     public void removeFilmById(@PathVariable("filmId") Long filmId) {
-        log.info("DEL {}", filmId);
+        log.info(" ******** DEL /films/{}", filmId);
         filmService.removeFilmById(filmId);
     }
 
@@ -92,7 +92,7 @@ public class FilmController {
             @PathVariable("directorId") Long directorID,
             @RequestParam(required = false) String sortBy
     ) {
-        log.info("GET /films/director/{}?sortBy={}}", directorID, sortBy);
+        log.info(" ******** GET /films/director/{}?sortBy={}", directorID, sortBy);
 
         FilmSortBy sortCriteria = null;
         if (sortBy != null) {
@@ -100,6 +100,7 @@ public class FilmController {
         }
 
         List<Film> films = directorService.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
+
         return films;
 
     }
@@ -109,6 +110,7 @@ public class FilmController {
             @RequestParam Long userId,
             @RequestParam Long friendId
     ) {
+        log.info(" ******** GET /films/common");
         return filmService.getCommonFilms(userId, friendId);
     }
 
@@ -118,12 +120,14 @@ public class FilmController {
             @RequestParam String query,
             @RequestParam @FilmSearchBy String by
     ) {
-        log.info("GET /films/search?query={}&by={}", query, by);
+        log.info(" ******** GET /films/search?query={}&by={}", query, by);
         Set<String> searchCriteria = Arrays.stream(by.split(","))
                 .map(String::trim)
                 .collect(Collectors.toSet());
 
-        return directorService.getFilmsBySearchCriteria(query, searchCriteria);
+        List<Film> filmList = directorService.getFilmsBySearchCriteria(query, searchCriteria);
+
+        return filmList;
     }
 
 }
