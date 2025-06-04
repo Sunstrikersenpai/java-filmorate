@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validation.FilmSearchBy;
@@ -93,16 +92,7 @@ public class FilmController {
             @RequestParam(required = false) String sortBy
     ) {
         log.info(" ******** GET /films/director/{}?sortBy={}", directorID, sortBy);
-
-        FilmSortBy sortCriteria = null;
-        if (sortBy != null) {
-            sortCriteria = FilmSortBy.fromString(sortBy);
-        }
-
-        List<Film> films = directorService.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
-
-        return films;
-
+        return directorService.getFilmsOfDirectorSortedByParams(directorID, sortBy);
     }
 
     @GetMapping("/common")
@@ -125,9 +115,7 @@ public class FilmController {
                 .map(String::trim)
                 .collect(Collectors.toSet());
 
-        List<Film> filmList = directorService.getFilmsBySearchCriteria(query.toLowerCase(), searchCriteria);
-
-        return filmList;
+        return directorService.getFilmsBySearchCriteria(query.toLowerCase(), searchCriteria);
     }
 
 }

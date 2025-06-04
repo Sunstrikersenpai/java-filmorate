@@ -20,26 +20,22 @@ public class DirectorController {
 
     //    Список всех режиссёров
     @GetMapping
-    public ResponseEntity<List<Director>> getAllDirectors() {
-        log.warn(" ******** GET /directors");
-        List<Director> directorList = directorService.getAllDirectors();
-        return ResponseEntity.ok(directorList);
+    public List<Director> getAllDirectors() {
+        log.info(" ******** GET /directors");
+        return directorService.getAllDirectors();
     }
 
     //    Получение режиссёра по id
     @GetMapping("{id}")
-    public ResponseEntity<Director> getDirectorByID(@PathVariable("id") Long directorID) {
+    public Director getDirectorByID(@PathVariable("id") Long directorID) {
         log.info(" ******** GET /directors/{}", directorID);
-
-        Director director = directorService.getDirectorByID(directorID); // если не найден - выбросит 404
-        return ResponseEntity.ok(director);
-
+        return directorService.getDirectorByID(directorID);
     }
 
     //  Создание режиссёра
     @PostMapping
     public Director addDirector(@RequestBody @Valid Director director) {
-        log.warn(" ******** POST /directors");
+        log.info(" ******** POST /directors");
         return directorService.addDirector(director);
     }
 

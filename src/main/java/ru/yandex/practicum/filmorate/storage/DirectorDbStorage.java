@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
@@ -30,7 +30,6 @@ public class DirectorDbStorage {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-
     public Optional<Director> getDirectorByID(Long directorID) {
         String sql = "SELECT d.director_id, d.name FROM directors d WHERE d.director_id = ?";
         List<Director> director = jdbcTemplate.query(sql, rowMapper, directorID);
@@ -38,12 +37,6 @@ public class DirectorDbStorage {
     }
 
     public Director add(Director director) {
-
-        // Проверка на пустое имя
-        if (director.getName() == null || director.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя режиссера не может быть пустым");
-        }
-
         String sql = "INSERT INTO directors (name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -58,7 +51,6 @@ public class DirectorDbStorage {
         return director;
     }
 
-
     public Director update(Director director) {
         String sql = "UPDATE directors SET name = ? WHERE director_id = ?";
         jdbcTemplate.update(sql, director.getName(), director.getId());
@@ -71,6 +63,5 @@ public class DirectorDbStorage {
         if (rows == 0) {
             throw new NotFoundException("Review not found");
         }
-
     }
 }

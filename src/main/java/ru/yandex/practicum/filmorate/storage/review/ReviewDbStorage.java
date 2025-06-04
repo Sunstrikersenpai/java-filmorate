@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.ReviewRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.ReviewRowMapper;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;

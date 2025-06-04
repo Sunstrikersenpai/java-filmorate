@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Director {
-    private long id;
-    @NotBlank
+    private Long id;
+    @NotBlank(message = "Имя режиссера не может быть пустым")
     private String name;
 }

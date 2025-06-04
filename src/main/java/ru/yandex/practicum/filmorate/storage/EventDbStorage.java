@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.mapper.EventRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.EventRowMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 
 import java.util.List;

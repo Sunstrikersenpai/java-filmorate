@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,13 @@ import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class DirectorService {
 
     private final DirectorDbStorage directorsDbStorage;
     private final FilmDbStorage filmDbStorage;
-
-    @Autowired
-    public DirectorService(DirectorDbStorage directorsDbStorage, FilmDbStorage filmDbStorage) {
-        this.directorsDbStorage = directorsDbStorage;
-        this.filmDbStorage = filmDbStorage;
-    }
 
     //    Список всех режиссёров
     public List<Director> getAllDirectors() {
@@ -39,17 +35,15 @@ public class DirectorService {
     }
 
     //  Создание режиссёра
-    public Director addDirector(Director directors) {
-
+    public Director addDirector(Director director) {
 
         try {
-            return directorsDbStorage.add(directors);
+            return directorsDbStorage.add(director);
         } catch (IllegalArgumentException e) {
             // Логируем ошибку валидации
             log.error("Ошибка при создании режиссёра: {}", e.getMessage());
             throw new ValidationException(e.getMessage());
         }
-
     }
 
     //  Изменение режиссёра
@@ -66,16 +60,20 @@ public class DirectorService {
     }
 
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
-    public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy) {
+    public List<Film> getFilmsOfDirectorSortedByParams(Long directorID, String sortBy) {
         // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
         getDirectorByID(directorID);
-        return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortBy);
+
+        FilmSortBy sortCriteria = null;
+        if (sortBy != null && !sortBy.isBlank()) {
+            sortCriteria = FilmSortBy.fromString(sortBy);
+        }
+
+        return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
     }
 
     // поиск по названию фильмов и по режиссёру
     public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
         return filmDbStorage.getFilmsBySearchCriteria(query, searchCriteria);
     }
-
-
 }
