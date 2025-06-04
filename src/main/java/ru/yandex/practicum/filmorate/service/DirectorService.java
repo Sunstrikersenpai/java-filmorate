@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
-import ru.yandex.practicum.filmorate.storage.DirectorDbStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 import java.util.Set;
@@ -20,17 +20,18 @@ import java.util.Set;
 @Service
 public class DirectorService {
 
-    private final DirectorDbStorage directorsDbStorage;
-    private final FilmDbStorage filmDbStorage;
+    private final DirectorStorage directorStorage;
+    @Qualifier("filmDbStorage")
+    private final FilmStorage filmStorage;
 
     //    Список всех режиссёров
     public List<Director> getAllDirectors() {
-        return directorsDbStorage.getDirectorList();
+        return directorStorage.getDirectorList();
     }
 
     //    Получение режиссёра по id
     public Director getDirectorByID(Long directorID) {
-        return directorsDbStorage.getDirectorByID(directorID)
+        return directorStorage.getDirectorByID(directorID)
                 .orElseThrow(() -> new NotFoundException("Режиссёр с ID " + directorID + " не найден"));
     }
 
@@ -38,7 +39,7 @@ public class DirectorService {
     public Director addDirector(Director director) {
 
         try {
-            return directorsDbStorage.add(director);
+            return directorStorage.add(director);
         } catch (IllegalArgumentException e) {
             // Логируем ошибку валидации
             log.error("Ошибка при создании режиссёра: {}", e.getMessage());
@@ -51,12 +52,12 @@ public class DirectorService {
         // Проверка наличия режиссёра (выбросит NotFoundException, если не найден)
         getDirectorByID(directors.getId());
 
-        return directorsDbStorage.update(directors);
+        return directorStorage.update(directors);
     }
 
     //  Удаление режиссёра
     public void deleteDirectors(Long directorID) {
-        directorsDbStorage.delete(directorID);
+        directorStorage.delete(directorID);
     }
 
     //    список фильмов режиссера отсортированных по количеству лайков или году выпуска.
@@ -69,11 +70,11 @@ public class DirectorService {
             sortCriteria = FilmSortBy.fromString(sortBy);
         }
 
-        return filmDbStorage.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
+        return filmStorage.getFilmsOfDirectorSortedByParams(directorID, sortCriteria);
     }
 
     // поиск по названию фильмов и по режиссёру
     public List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria) {
-        return filmDbStorage.getFilmsBySearchCriteria(query, searchCriteria);
+        return filmStorage.getFilmsBySearchCriteria(query, searchCriteria);
     }
 }

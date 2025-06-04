@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
 
@@ -28,4 +30,8 @@ public interface FilmStorage {
     List<Film> getRecommendationsFilms(Long userId);
 
     boolean likeExists(Long filmId, Long userId);
+
+    List<Film> getFilmsOfDirectorSortedByParams(Long directorID, FilmSortBy sortBy);
+
+    List<Film> getFilmsBySearchCriteria(String query, Set<String> searchCriteria);
 }
