@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
@@ -16,7 +17,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    public Review addReview(@RequestBody Review review) {
+    public Review addReview(@Valid @RequestBody Review review) {
         return reviewService.addReview(review);
     }
 

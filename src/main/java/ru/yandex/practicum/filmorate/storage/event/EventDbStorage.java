@@ -1,23 +1,24 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.event;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.storage.mapper.EventRowMapper;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.storage.mapper.EventRowMapper;
 
 import java.util.List;
 
 @Repository
 @AllArgsConstructor
-public class EventDbStorage {
+@Qualifier("eventDbStorage")
+public class EventDbStorage implements EventStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final EventRowMapper eventRowMapper;
 
     public List<Event> getEvent(Long id) {
         String sql = "SELECT * FROM events WHERE user_id = ? ";
-        //Логично было бы делать сортировку по timestamp, но это валит тесты ¯\_(ツ)_/¯
         return jdbcTemplate.query(sql, eventRowMapper, id);
     }
 

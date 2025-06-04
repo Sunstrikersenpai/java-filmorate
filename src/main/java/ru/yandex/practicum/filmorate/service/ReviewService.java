@@ -4,13 +4,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.enums.EventOperation;
 import ru.yandex.practicum.filmorate.model.enums.EventType;
-import ru.yandex.practicum.filmorate.storage.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -23,42 +21,40 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private final EventDbStorage eventStorage;
+    private final EventService eventService;
 
     public ReviewService(
             ReviewStorage reviewStorage,
             @Qualifier("userDbStorage") UserStorage userStorage,
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            EventDbStorage eventStorage
+            EventService eventService
     ) {
         this.reviewStorage = reviewStorage;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
-        this.eventStorage = eventStorage;
+        this.eventService = eventService;
     }
 
     public Review addReview(Review review) {
-        validateReview(review);
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
         reviewStorage.addReview(review);
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.ADD);
+        eventService.logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.ADD);
         return review;
     }
 
     public Review updateReview(Review review) {
-        validateReview(review);
         getUserById(review.getUserId());
         getFilmById(review.getFilmId());
         Review review1 = reviewStorage.updateReview(review);
-        logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW, EventOperation.UPDATE);
+        eventService.logEvent(review1.getUserId(), review1.getReviewId(), EventType.REVIEW, EventOperation.UPDATE);
         return review1;
     }
 
     public void deleteReview(Long id) {
         Review review = getReviewById(id);
         reviewStorage.deleteReview(id);
-        logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.REMOVE);
+        eventService.logEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, EventOperation.REMOVE);
     }
 
     public Review getReview(Long id) {
@@ -94,6 +90,9 @@ public class ReviewService {
     }
 
     private User getUserById(Long userId) {
+        if (userId == null) {
+            throw new ValidationException("Validation error");
+        }
         return userStorage.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User с ID " + userId + " не найден"));
     }
@@ -103,32 +102,9 @@ public class ReviewService {
     }
 
     private Film getFilmById(Long filmId) {
+        if (filmId == null) {
+            throw new ValidationException("Validation error");
+        }
         return filmStorage.getFilm(filmId).orElseThrow(() -> new NotFoundException("Film not found"));
-    }
-
-    private void logEvent(Long userId, Long entityId, EventType type, EventOperation operation) {
-        eventStorage.addEvent(
-                Event.builder()
-                        .userId(userId)
-                        .entityId(entityId)
-                        .eventType(type)
-                        .operation(operation)
-                        .build()
-        );
-    }
-
-    private void validateReview(Review review) {
-        if (review.getUserId() == null) {
-            throw new ValidationException("User ID must not be null");
-        }
-        if (review.getFilmId() == null) {
-            throw new ValidationException("Film ID must not be null");
-        }
-        if (review.getIsPositive() == null) {
-            throw new ValidationException("Field 'isPositive' must not be null");
-        }
-        if (review.getContent() == null || review.getContent().isBlank()) {
-            throw new ValidationException("Content must not be empty");
-        }
     }
 }

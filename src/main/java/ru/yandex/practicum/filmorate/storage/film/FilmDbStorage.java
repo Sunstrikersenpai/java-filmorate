@@ -7,13 +7,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.storage.mapper.DirectorRowMapper;
-import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
-import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.enums.FilmSortBy;
+import ru.yandex.practicum.filmorate.storage.mapper.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -263,7 +263,7 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE LOWER(f.name) LIKE LOWER(?)" +
                     " ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC ";
 
-            filmList = jdbcTemplate.query(sql, filmRowMapper,"%" + query + "%");
+            filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%");
         } else if (searchByDirector) {
             String sql = "SELECT f.film_id, f.name, f.description, f.duration, f.release_date, " +
                     "f.mpa_id, m.name AS mpa_name " +
@@ -274,7 +274,7 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE LOWER(d.name) LIKE LOWER(?)" +
                     " ORDER BY (SELECT COUNT(*) FROM likes l WHERE l.film_id = f.film_id) DESC ";
 
-            filmList = jdbcTemplate.query(sql, filmRowMapper,"%" + query + "%");
+            filmList = jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%");
         }
 
         return setGenresAndDirectorsForFilms(filmList);
