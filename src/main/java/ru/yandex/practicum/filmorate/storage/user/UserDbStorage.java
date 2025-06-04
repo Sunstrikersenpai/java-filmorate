@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.mapper.UserRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -83,5 +83,11 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT u.* FROM users u " +
                 "JOIN friends f ON u.user_id = f.friend_id WHERE f.user_id = ?";
         return jdbcTemplate.query(sql, userRowMapper, userId);
+    }
+
+    @Override
+    public void removeUserById(Long userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
     }
 }
