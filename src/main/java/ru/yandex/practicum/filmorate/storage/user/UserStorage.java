@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserStorage {
-
     List<User> getUsers();
 
     User addUser(User user);
@@ -20,4 +19,6 @@ public interface UserStorage {
     void removeFriend(Long userId, Long friendId);
 
     List<User> getFriends(Long userId);
+
+    void removeUserById(Long userId);
 }

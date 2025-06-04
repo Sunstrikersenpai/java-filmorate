@@ -5,7 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventOperation;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -18,12 +22,17 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final EventService eventService;
+    private final FilmService filmService;
 
     @Autowired
     public UserService(
-            @Qualifier("userDbStorage") UserStorage userStorage
+            @Qualifier("userDbStorage") UserStorage userStorage,
+            EventService eventService, FilmService filmService
     ) {
         this.userStorage = userStorage;
+        this.eventService = eventService;
+        this.filmService = filmService;
     }
 
     public User addUserToFriendList(Long user1Id, Long user2Id) {
@@ -31,6 +40,7 @@ public class UserService {
         getUserById(user2Id);
 
         userStorage.addFriend(user1Id, user2Id);
+        eventService.logEvent(user1Id, user2Id, EventType.FRIEND, EventOperation.ADD);
         return user1;
     }
 
@@ -39,6 +49,7 @@ public class UserService {
         getUserById(user2Id);
 
         userStorage.removeFriend(user1Id, user2Id);
+        eventService.logEvent(user1Id, user2Id, EventType.FRIEND, EventOperation.REMOVE);
         return user1;
     }
 
@@ -52,13 +63,14 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        if (userStorage.getUserById(user.getId()).isEmpty()) {
-            throw new NotFoundException("User not found");
-        }
+        getUserById(user.getId());
         return userStorage.updateUser(user);
     }
 
@@ -76,5 +88,19 @@ public class UserService {
             userStorage.getUserById(friendId).ifPresent(commonFriends::add);
         }
         return commonFriends;
+    }
+
+    public void removeUserById(Long userId) {
+        userStorage.removeUserById(userId);
+    }
+
+    public List<Event> getFeed(Long userId) {
+        getUserById(userId);
+        return eventService.getFeed(userId);
+    }
+
+    public List<Film> getRecommendationsFilms(Long userId) {
+        getUserById(userId);
+        return filmService.getRecommendationsFilms(userId);
     }
 }
